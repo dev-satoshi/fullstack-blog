@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +29,72 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'corsheaders',
+    'django.contrib.sites',
+    'rest_framework.authtoken',
+    'accounts',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 ]
+
+# allauth Googleプロバイダー設定
+# https://django-allauth.readthedocs.io/en/latest/providers.html#google
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+# allauth設定
+# https://django-allauth.readthedocs.io/en/latest/configuration.html
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none'
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+
+# dj_rest_auth設定
+# https://dj-rest-auth.readthedocs.io/en/latest/installation.html
+SITE_ID = 1
+
+# https://dj-rest-auth.readthedocs.io/en/latest/configuration.html
+REST_USE_JWT = True
+REST_AUTH_SERIALIZERS = {
+    'USER_DETAILS_SERIALIZER': 'accounts.serializers.UserSerializer'
+}
+
+# REST FRAMEWORK設定
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permission.IsAuthenticated'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'dj_rest_auth.utils.JWTCookieAuthentication',
+    ),
+}
+
+# Simple JWT設定
+# https://django-rest-framework-simplejwt.readthsdocs.io/en/latest/settings.html
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
+    'USER_ID_FIELD': 'userId',
+    'USER_ID_CLAIM': 'user_id',
+}
+
+# 認証モデル設定
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
